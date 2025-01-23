@@ -217,6 +217,8 @@ public class ServletConfig
     else
       LOGGER.info ("Sucessfully checked that the provided Peppol AP certificate is valid.");
 
+    Phase4PeppolDefaultReceiverConfiguration.setCheckSigningCertificateRevocation (false);
+
     // Eventually enable the receiver check, so that for each incoming request
     // the validity is crosscheck against the owning SMP
     final String sSMPURL = AS4Configuration.getConfig ().getAsString ("smp.url");

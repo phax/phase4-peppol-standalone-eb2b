@@ -22,7 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 
-import com.helger.commons.debug.GlobalDebug;
 import com.helger.peppol.utils.PeppolCertificateChecker;
 import com.helger.peppolid.IParticipantIdentifier;
 import com.helger.phase4.dump.AS4DumpManager;
@@ -47,9 +46,6 @@ public final class MainPhase4PeppolSenderLocalHost8080
   public static void main (final String [] args)
   {
     WebScopeManager.onGlobalBegin (MockServletContext.create ());
-
-    // Required for "http" only connections
-    GlobalDebug.setDebugModeDirect (true);
 
     // Dump (for debugging purpose only)
     AS4DumpManager.setIncomingDumper (new AS4IncomingDumperFileBased ());
