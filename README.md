@@ -1,4 +1,4 @@
-# Standalone Peppol phase eB2B
+# Standalone Peppol phase4 eB2B
 
 This an example standalone implementation of [phase4](https://github.com/phax/phase4) for the Peppol Network.
 
