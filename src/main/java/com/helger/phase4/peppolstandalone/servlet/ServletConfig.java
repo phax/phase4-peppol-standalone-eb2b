@@ -195,12 +195,12 @@ public class ServletConfig
     final X509Certificate aAPCert = (X509Certificate) aPKE.getCertificate ();
 
     // Use the specific eB2B CA here
-    final PeppolCAChecker aChecker = PeppolCertificateChecker.peppolTestEb2bAP ();
-    final EPeppolCertificateCheckResult eCheckResult = aChecker.checkCertificate (aAPCert,
-                                                                                  MetaAS4Manager.getTimestampMgr ()
-                                                                                                .getCurrentDateTime (),
-                                                                                  ETriState.FALSE,
-                                                                                  null);
+    final PeppolCAChecker aAPCAChecker = PeppolCertificateChecker.peppolTestEb2bAP ();
+    final EPeppolCertificateCheckResult eCheckResult = aAPCAChecker.checkCertificate (aAPCert,
+                                                                                      MetaAS4Manager.getTimestampMgr ()
+                                                                                                    .getCurrentDateTime (),
+                                                                                      ETriState.FALSE,
+                                                                                      null);
     if (eCheckResult.isInvalid ())
     {
       // TODO Change from "true" to "false" once you have a Peppol
@@ -217,7 +217,8 @@ public class ServletConfig
     else
       LOGGER.info ("Sucessfully checked that the provided Peppol AP certificate is valid.");
 
-    Phase4PeppolDefaultReceiverConfiguration.setCheckSigningCertificateRevocation (false);
+    // This must be set anyway
+    Phase4PeppolDefaultReceiverConfiguration.setAPCAChecker (aAPCAChecker);
 
     // Eventually enable the receiver check, so that for each incoming request
     // the validity is crosscheck against the owning SMP
