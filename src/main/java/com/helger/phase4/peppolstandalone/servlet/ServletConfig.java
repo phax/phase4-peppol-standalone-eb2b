@@ -49,7 +49,6 @@ import com.helger.phase4.incoming.AS4ServerInitializer;
 import com.helger.phase4.incoming.mgr.AS4ProfileSelector;
 import com.helger.phase4.mgr.MetaAS4Manager;
 import com.helger.phase4.peppol.servlet.Phase4PeppolDefaultReceiverConfiguration;
-import com.helger.phase4.peppolstandalone.model.EStageType;
 import com.helger.phase4.profile.peppol.AS4PeppolProfileRegistarSPI;
 import com.helger.phase4.profile.peppol.PeppolCRLDownloader;
 import com.helger.phase4.profile.peppol.Phase4PeppolHttpClientSettings;
@@ -190,17 +189,13 @@ public class ServletConfig
       throw new InitializationException ("Failed to load configured AS4 private key - fix the configuration");
     LOGGER.info ("Successfully loaded configured AS4 private key from the crypto factory");
 
-    // TODO configure the stage correctly
-    final EStageType eStage = EStageType.TEST;
-
     // Check the configured Peppol AP certificate
     // * No caching
     // * Use global certificate check mode
     final X509Certificate aAPCert = (X509Certificate) aPKE.getCertificate ();
 
-    // Note: For eB2B you want to check against the eB2B CA instead
-    final PeppolCAChecker aChecker = eStage.isProduction () ? PeppolCertificateChecker.peppolProductionAP ()
-                                                            : PeppolCertificateChecker.peppolTestAP ();
+    // Use the specific eB2B CA here
+    final PeppolCAChecker aChecker = PeppolCertificateChecker.peppolTestEb2bAP ();
     final EPeppolCertificateCheckResult eCheckResult = aChecker.checkCertificate (aAPCert,
                                                                                   MetaAS4Manager.getTimestampMgr ()
                                                                                                 .getCurrentDateTime (),

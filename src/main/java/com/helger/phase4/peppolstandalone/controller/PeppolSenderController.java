@@ -47,6 +47,7 @@ import com.helger.peppol.sbdh.read.PeppolSBDHDocumentReadException;
 import com.helger.peppol.sbdh.read.PeppolSBDHDocumentReader;
 import com.helger.peppol.sml.ESML;
 import com.helger.peppol.sml.ISMLInfo;
+import com.helger.peppol.utils.PeppolCertificateChecker;
 import com.helger.peppol.utils.PeppolCertificateHelper;
 import com.helger.peppolid.IParticipantIdentifier;
 import com.helger.peppolid.factory.PeppolIdentifierFactory;
@@ -141,6 +142,7 @@ public class PeppolSenderController
                                    .countryC1 (countryC1)
                                    .payload (aDoc.getDocumentElement ())
                                    .smpClient (aSMPClient)
+                                   .peppolAP_CAChecker (PeppolCertificateChecker.peppolTestEb2bAP ())
                                    .rawResponseConsumer (new AS4RawResponseConsumerWriteToFile ())
                                    .endpointURLConsumer (endpointUrl -> {
                                      // Determined by SMP lookup
@@ -359,6 +361,7 @@ public class PeppolSenderController
                                    .payloadAndMetadata (aData)
                                    .senderPartyID (sMyPeppolSeatID)
                                    .smpClient (aSMPClient)
+                                   .peppolAP_CAChecker (PeppolCertificateChecker.peppolTestEb2bAP ())
                                    .rawResponseConsumer (new AS4RawResponseConsumerWriteToFile ())
                                    .endpointURLConsumer (endpointUrl -> {
                                      // Determined by SMP lookup
