@@ -286,33 +286,6 @@ public class PeppolSenderController
                                            countryC1);
   }
 
-  @PostMapping (path = "/sendprod/{senderId}/{receiverId}/{docTypeId}/{processId}/{countryC1}",
-                produces = MediaType.APPLICATION_JSON_VALUE)
-  public String sendPeppolProdMessage (@RequestBody final byte [] aPayloadBytes,
-                                       @PathVariable final String senderId,
-                                       @PathVariable final String receiverId,
-                                       @PathVariable final String docTypeId,
-                                       @PathVariable final String processId,
-                                       @PathVariable final String countryC1)
-  {
-    LOGGER.info ("Trying to send Peppol Prod message from '" +
-                 senderId +
-                 "' to '" +
-                 receiverId +
-                 "' using '" +
-                 docTypeId +
-                 "' and '" +
-                 processId +
-                 "'");
-    return _sendPeppolMessageCreatingSbdh (aPayloadBytes,
-                                           ESML.DIGIT_PRODUCTION,
-                                           senderId,
-                                           receiverId,
-                                           docTypeId,
-                                           processId,
-                                           countryC1);
-  }
-
   @Nonnull
   private String _sendPeppolMessagePredefinedSbdh (@Nonnull final PeppolSBDHData aData,
                                                    @Nonnull final ISMLInfo aSmlInfo)

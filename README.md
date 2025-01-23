@@ -24,11 +24,6 @@ This class contains a `TODO` where you need to implement the stuff you want to d
 
 Sending is triggered via an HTTP POST request.
 
-To send to a production endpoint (using SML) use this URL (the SBDH is built inside):
-```
-/sendprod/{senderId}/{receiverId}/{docTypeId}/{processId}/{countryC1}
-```
-
 To send to a test endpoint (using SMK) use this URL (the SBDH is built inside):
 ```
 /sendtest/{senderId}/{receiverId}/{docTypeId}/{processId}/{countryC1}
