@@ -16,4 +16,4 @@
 @REM
 
 @echo off
-docker run -p 8080:8080 phelger/phase4-peppol-standalone
+docker run -p 8080:8080 phelger/phase4-peppol-standalone-eb2b

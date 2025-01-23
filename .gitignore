@@ -7,5 +7,5 @@ target/
 generated/
 
 private-*.properties
-#*.p12
-#*.jks
+*.p12
+*.jks

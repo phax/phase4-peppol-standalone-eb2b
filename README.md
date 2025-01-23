@@ -74,7 +74,7 @@ This application is based on Spring Boot 3.x and uses Apache 3.x and Java 17 to 
 mvn clean install
 ```
 
-The resulting Spring Boot application is afterwards available as `target/phase4-peppol-standalone-x.y.z.jar` (`x.y.z` is the version number).
+The resulting Spring Boot application is afterwards available as `target/phase4-peppol-standalone-eb2b-x.y.z.jar` (`x.y.z` is the version number).
 
 An example Docker file is also present - see `docker-build.cmd` and `docker-run.cmd` for details.
 
@@ -85,7 +85,7 @@ You may need to rebuild the application to have an effect.
 
 ## Running
 
-If you run it with `java -jar target/phase4-peppol-standalone-x.y.z.jar` it will spawn a local Tomcat at port `8080` and you can access it via `http://localhost:8080`.
+If you run it with `java -jar target/phase4-peppol-standalone-eb2b-x.y.z.jar` it will spawn a local Tomcat at port `8080` and you can access it via `http://localhost:8080`.
 It should show a small introduction page. The `/as4` servlet itself has no user interface.
 
 In case you run the application behind an HTTP proxy, modify the settings in the configuration file (`http.proxy.*`).
