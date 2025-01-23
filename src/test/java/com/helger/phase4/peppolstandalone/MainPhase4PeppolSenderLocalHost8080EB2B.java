@@ -39,9 +39,9 @@ import com.helger.xml.serialize.read.DOMReader;
  *
  * @author Philip Helger
  */
-public final class MainPhase4PeppolSenderLocalHost8080
+public final class MainPhase4PeppolSenderLocalHost8080EB2B
 {
-  private static final Logger LOGGER = LoggerFactory.getLogger (MainPhase4PeppolSenderLocalHost8080.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (MainPhase4PeppolSenderLocalHost8080EB2B.class);
 
   public static void main (final String [] args)
   {
