@@ -11,7 +11,7 @@ Use it as a template to add your own code.
 
 This project is part of my Peppol solution stack. See https://github.com/phax/peppol for other components and libraries in that area.
 
-# Primary Change
+# Primary Changes
 
 This section highlights the changes specifically for eB2B compared to the normal "phase4-peppol-standalone" version (from the time of cloning):
 * The sending of production documents was removed, because there is currently no eB2B Production PKI
