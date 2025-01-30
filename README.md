@@ -2,7 +2,7 @@
 
 This an example standalone implementation of [phase4](https://github.com/phax/phase4) for the Peppol Network.
 
-This is the pendant of https://github.com/phax/phase4-peppol-standalone for eB2B.
+This is the pendant of https://github.com/phax/phase4-peppol-standalone for eB2B. See the OpenPeppol Confluence https://openpeppol.atlassian.net/wiki/spaces/EIP/pages/3571482627/eB2B+Starting+Environment+Documents for details.
 
 This is a demo application and NOT ready for production use.
 Use it as a template to add your own code.
@@ -10,6 +10,18 @@ Use it as a template to add your own code.
 **Note:** because it is demo code, no releases are created - you have to modify it anyway.
 
 This project is part of my Peppol solution stack. See https://github.com/phax/peppol for other components and libraries in that area.
+
+# Primary Change
+
+This section highlights the changes specifically for eB2B compared to the normal "phase4-peppol-standalone" version (from the time of cloning):
+* The sending of production documents was removed, because there is currently no eB2B Production PKI
+* The sender builder uses a different CA via `.peppolAP_CAChecker (PeppolCertificateChecker.peppolTestEb2bAP ())` - same for normal sending and SBDH sending
+* In class `ServletConfig` the CA `PeppolCertificateChecker.peppolTestEb2bAP ()` should be used to test our own certificate
+* In the application.properties file the following properties were changed:
+```
+org.apache.wss4j.crypto.merlin.truststore.file=truststore/2018/eb2b-ap-pilot-truststore.jks
+smpclient.truststore.path=truststore/2018/smp-pilot-truststore.jks
+```
 
 # Functionality
 
