@@ -17,6 +17,7 @@ This section highlights the changes specifically for eB2B compared to the normal
 * The sending of production documents was removed, because there is currently no eB2B Production PKI
 * The sender builder uses a different CA via `.peppolAP_CAChecker (PeppolCertificateChecker.peppolTestEb2bAP ())` - same for normal sending and SBDH sending
 * In class `ServletConfig` the CA `PeppolCertificateChecker.peppolTestEb2bAP ()` should be used to test our own certificate
+* In class `ServletConfig` the `Phase4PeppolDefaultReceiverConfiguration.setAPCAChecker (aAPCAChecker);` must also use `PeppolCertificateChecker.peppolTestEb2bAP ()`
 * In the application.properties file the following properties were changed:
 ```
 org.apache.wss4j.crypto.merlin.truststore.file=truststore/2018/eb2b-ap-pilot-truststore.jks
