@@ -43,8 +43,8 @@ import com.helger.json.JsonArray;
 import com.helger.json.JsonObject;
 import com.helger.json.serialize.JsonWriterSettings;
 import com.helger.peppol.sbdh.PeppolSBDHData;
-import com.helger.peppol.sbdh.read.PeppolSBDHDocumentReadException;
-import com.helger.peppol.sbdh.read.PeppolSBDHDocumentReader;
+import com.helger.peppol.sbdh.PeppolSBDHDataReadException;
+import com.helger.peppol.sbdh.PeppolSBDHDataReader;
 import com.helger.peppol.sml.ESML;
 import com.helger.peppol.sml.ISMLInfo;
 import com.helger.peppol.utils.PeppolCertificateChecker;
@@ -259,8 +259,7 @@ public class PeppolSenderController
     return aJson.getAsJsonString (JsonWriterSettings.DEFAULT_SETTINGS_FORMATTED);
   }
 
-  @PostMapping (path = "/sendtest/{senderId}/{receiverId}/{docTypeId}/{processId}/{countryC1}",
-                produces = MediaType.APPLICATION_JSON_VALUE)
+  @PostMapping (path = "/sendtest/{senderId}/{receiverId}/{docTypeId}/{processId}/{countryC1}", produces = MediaType.APPLICATION_JSON_VALUE)
   public String sendPeppolTestMessage (@RequestBody final byte [] aPayloadBytes,
                                        @PathVariable final String senderId,
                                        @PathVariable final String receiverId,
@@ -456,9 +455,9 @@ public class PeppolSenderController
     final PeppolSBDHData aData;
     try
     {
-      aData = new PeppolSBDHDocumentReader (PeppolIdentifierFactory.INSTANCE).extractData (new NonBlockingByteArrayInputStream (aPayloadBytes));
+      aData = new PeppolSBDHDataReader (PeppolIdentifierFactory.INSTANCE).extractData (new NonBlockingByteArrayInputStream (aPayloadBytes));
     }
-    catch (final PeppolSBDHDocumentReadException ex)
+    catch (final PeppolSBDHDataReadException ex)
     {
       // TODO This error handling might be improved to return a status error
       // instead
