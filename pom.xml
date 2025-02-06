@@ -24,7 +24,7 @@
   <parent>
     <groupId>com.helger.phase4</groupId>
     <artifactId>phase4-parent-pom</artifactId>
-    <version>3.0.4</version>
+    <version>3.0.5</version>
   </parent>
   <artifactId>phase4-peppol-standalone-eb2b</artifactId>
   <name>phase4-peppol-standalone-eb2b</name>
@@ -125,14 +125,16 @@
     </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-api</artifactId><!--$NO-MVN-MAN-VER$-->
-      <version>${junit5.version}</version>  <!-- transitive version is 5.10.3 :( -->
+      <artifactId>junit-jupiter-api</artifactId>
+      <!-- transitive version is 5.10.3 :( -->
+      <version>${junit5.version}</version>  <!--$NO-MVN-MAN-VER$--> 
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-engine</artifactId><!--$NO-MVN-MAN-VER$-->
-      <version>${junit5.version}</version>  <!-- transitive version is 5.10.9 :( -->
+      <artifactId>junit-jupiter-engine</artifactId>
+      <!-- transitive version is 5.10.9 :( -->
+      <version>${junit5.version}</version>  <!--$NO-MVN-MAN-VER$-->
       <scope>test</scope>
     </dependency>
   </dependencies>
