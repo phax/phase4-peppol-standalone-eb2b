@@ -57,7 +57,7 @@
   -->
 
   <properties>
-    <spring-boot.version>3.4.2</spring-boot.version>
+    <spring-boot.version>3.4.3</spring-boot.version>
     <junit5.version>5.11.4</junit5.version>
   </properties>
 
