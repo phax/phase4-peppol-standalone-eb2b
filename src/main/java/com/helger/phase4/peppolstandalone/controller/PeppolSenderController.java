@@ -45,10 +45,9 @@ import com.helger.json.serialize.JsonWriterSettings;
 import com.helger.peppol.sbdh.PeppolSBDHData;
 import com.helger.peppol.sbdh.PeppolSBDHDataReadException;
 import com.helger.peppol.sbdh.PeppolSBDHDataReader;
+import com.helger.peppol.security.PeppolTrustedCA;
 import com.helger.peppol.sml.ESML;
 import com.helger.peppol.sml.ISMLInfo;
-import com.helger.peppol.utils.PeppolCertificateChecker;
-import com.helger.peppol.utils.PeppolCertificateHelper;
 import com.helger.peppolid.IParticipantIdentifier;
 import com.helger.peppolid.factory.PeppolIdentifierFactory;
 import com.helger.phase4.client.IAS4ClientBuildMessageCallback;
@@ -70,8 +69,7 @@ import com.helger.smpclient.peppol.SMPClientReadOnly;
 import com.helger.xml.serialize.read.DOMReader;
 
 /**
- * This is the primary REST controller for the APIs to send messages over
- * Peppol.
+ * This is the primary REST controller for the APIs to send messages over Peppol.
  *
  * @author Philip Helger
  */
@@ -135,81 +133,97 @@ public class PeppolSenderController
       // TODO set to null if your using the dumping
       final IAS4RawResponseConsumer aRRC = new AS4RawResponseConsumerWriteToFile ();
 
-      final PeppolUserMessageBuilder aBuilder;
-      aBuilder = Phase4PeppolSender.builder ()
-                                   .httpClientFactory (aHCS)
-                                   .documentTypeID (Phase4PeppolSender.IF.createDocumentTypeIdentifierWithDefaultScheme (docTypeId))
-                                   .processID (Phase4PeppolSender.IF.createProcessIdentifierWithDefaultScheme (processId))
-                                   .senderParticipantID (Phase4PeppolSender.IF.createParticipantIdentifierWithDefaultScheme (senderId))
-                                   .receiverParticipantID (aReceiverID)
-                                   .senderPartyID (sMyPeppolSeatID)
-                                   .countryC1 (countryC1)
-                                   .payload (aDoc.getDocumentElement ())
-                                   .smpClient (aSMPClient)
-                                   .peppolAP_CAChecker (PeppolCertificateChecker.peppolTestEb2bAP ())
-                                   .rawResponseConsumer (aRRC)
-                                   .endpointURLConsumer (endpointUrl -> {
-                                     // Determined by SMP lookup
-                                     aJson.add ("c3EndpointUrl", endpointUrl);
-                                   })
-                                   .certificateConsumer ( (aAPCertificate, aCheckDT, eCertCheckResult) -> {
-                                     // Determined by SMP lookup
-                                     aJson.add ("c3Cert", CertificateHelper.getPEMEncodedCertificate (aAPCertificate));
-                                     aJson.add ("c3CertSubjectCN",
-                                                PeppolCertificateHelper.getSubjectCN (aAPCertificate));
-                                     aJson.add ("c3CertCheckDT", PDTWebDateHelper.getAsStringXSD (aCheckDT));
-                                     aJson.add ("c3CertCheckResult", eCertCheckResult);
-                                   })
-                                   .buildMessageCallback (new IAS4ClientBuildMessageCallback ()
-                                   {
-                                     public void onAS4Message (@Nonnull final AbstractAS4Message <?> aMsg)
-                                     {
-                                       // Created AS4 fields
-                                       final AS4UserMessage aUserMsg = (AS4UserMessage) aMsg;
-                                       aJson.add ("as4MessageId",
-                                                  aUserMsg.getEbms3UserMessage ().getMessageInfo ().getMessageId ());
-                                       aJson.add ("as4ConversationId",
-                                                  aUserMsg.getEbms3UserMessage ()
-                                                          .getCollaborationInfo ()
-                                                          .getConversationId ());
-                                     }
-                                   })
-                                   .signalMsgConsumer ( (aSignalMsg, aMessageMetadata, aState) -> {
-                                     aJson.add ("as4ReceivedSignalMsg",
-                                                new Ebms3SignalMessageMarshaller ().getAsString (aSignalMsg));
+      final PeppolUserMessageBuilder aBuilder = Phase4PeppolSender.builder ()
+                                                                  .httpClientFactory (aHCS)
+                                                                  .documentTypeID (Phase4PeppolSender.IF.createDocumentTypeIdentifierWithDefaultScheme (docTypeId))
+                                                                  .processID (Phase4PeppolSender.IF.createProcessIdentifierWithDefaultScheme (processId))
+                                                                  .senderParticipantID (Phase4PeppolSender.IF.createParticipantIdentifierWithDefaultScheme (senderId))
+                                                                  .receiverParticipantID (aReceiverID)
+                                                                  .senderPartyID (sMyPeppolSeatID)
+                                                                  .countryC1 (countryC1)
+                                                                  .payload (aDoc.getDocumentElement ())
+                                                                  .smpClient (aSMPClient)
+                                                                  .peppolAP_CAChecker (PeppolTrustedCA.peppolTestEb2bAP ())
+                                                                  .rawResponseConsumer (aRRC)
+                                                                  .endpointURLConsumer (endpointUrl -> {
+                                                                    // Determined by SMP lookup
+                                                                    aJson.add ("c3EndpointUrl", endpointUrl);
+                                                                  })
+                                                                  .certificateConsumer ( (aAPCertificate,
+                                                                                          aCheckDT,
+                                                                                          eCertCheckResult) -> {
+                                                                    // Determined by SMP lookup
+                                                                    aJson.add ("c3Cert",
+                                                                               CertificateHelper.getPEMEncodedCertificate (aAPCertificate));
+                                                                    aJson.add ("c3CertSubjectCN",
+                                                                               CertificateHelper.getSubjectCN (aAPCertificate));
+                                                                    aJson.add ("c3CertCheckDT",
+                                                                               PDTWebDateHelper.getAsStringXSD (aCheckDT));
+                                                                    aJson.add ("c3CertCheckResult", eCertCheckResult);
+                                                                  })
+                                                                  .buildMessageCallback (new IAS4ClientBuildMessageCallback ()
+                                                                  {
+                                                                    public void onAS4Message (@Nonnull final AbstractAS4Message <?> aMsg)
+                                                                    {
+                                                                      // Created AS4 fields
+                                                                      final AS4UserMessage aUserMsg = (AS4UserMessage) aMsg;
+                                                                      aJson.add ("as4MessageId",
+                                                                                 aUserMsg.getEbms3UserMessage ()
+                                                                                         .getMessageInfo ()
+                                                                                         .getMessageId ());
+                                                                      aJson.add ("as4ConversationId",
+                                                                                 aUserMsg.getEbms3UserMessage ()
+                                                                                         .getCollaborationInfo ()
+                                                                                         .getConversationId ());
+                                                                    }
+                                                                  })
+                                                                  .signalMsgConsumer ( (aSignalMsg,
+                                                                                        aMessageMetadata,
+                                                                                        aState) -> {
+                                                                    aJson.add ("as4ReceivedSignalMsg",
+                                                                               new Ebms3SignalMessageMarshaller ().getAsString (aSignalMsg));
 
-                                     if (aSignalMsg.hasErrorEntries ())
-                                     {
-                                       final IJsonArray aErrors = new JsonArray ();
-                                       for (final Ebms3Error err : aSignalMsg.getError ())
-                                       {
-                                         final IJsonObject aErrorDetails = new JsonObject ();
-                                         if (err.getDescription () != null)
-                                           aErrorDetails.add ("description", err.getDescriptionValue ());
-                                         if (err.getErrorDetail () != null)
-                                           aErrorDetails.add ("errorDetails", err.getErrorDetail ());
-                                         if (err.getCategory () != null)
-                                           aErrorDetails.add ("category", err.getCategory ());
-                                         if (err.getRefToMessageInError () != null)
-                                           aErrorDetails.add ("refToMessageInError", err.getRefToMessageInError ());
-                                         if (err.getErrorCode () != null)
-                                           aErrorDetails.add ("errorCode", err.getErrorCode ());
-                                         if (err.getOrigin () != null)
-                                           aErrorDetails.add ("origin", err.getOrigin ());
-                                         if (err.getSeverity () != null)
-                                           aErrorDetails.add ("severity", err.getSeverity ());
-                                         if (err.getShortDescription () != null)
-                                           aErrorDetails.add ("shortDescription", err.getShortDescription ());
-                                         aErrors.add (aErrorDetails);
-                                         LOGGER.warn ("AS4 error received: " + aErrorDetails.getAsJsonString ());
-                                       }
-                                       aJson.add ("as4ResponseErrors", aErrors);
-                                       aJson.add ("as4ResponseError", true);
-                                     }
-                                     else
-                                       aJson.add ("as4ResponseError", false);
-                                   })
-                                   .disableValidation ();
+                                                                    if (aSignalMsg.hasErrorEntries ())
+                                                                    {
+                                                                      final IJsonArray aErrors = new JsonArray ();
+                                                                      for (final Ebms3Error err : aSignalMsg.getError ())
+                                                                      {
+                                                                        final IJsonObject aErrorDetails = new JsonObject ();
+                                                                        if (err.getDescription () != null)
+                                                                          aErrorDetails.add ("description",
+                                                                                             err.getDescriptionValue ());
+                                                                        if (err.getErrorDetail () != null)
+                                                                          aErrorDetails.add ("errorDetails",
+                                                                                             err.getErrorDetail ());
+                                                                        if (err.getCategory () != null)
+                                                                          aErrorDetails.add ("category",
+                                                                                             err.getCategory ());
+                                                                        if (err.getRefToMessageInError () != null)
+                                                                          aErrorDetails.add ("refToMessageInError",
+                                                                                             err.getRefToMessageInError ());
+                                                                        if (err.getErrorCode () != null)
+                                                                          aErrorDetails.add ("errorCode",
+                                                                                             err.getErrorCode ());
+                                                                        if (err.getOrigin () != null)
+                                                                          aErrorDetails.add ("origin",
+                                                                                             err.getOrigin ());
+                                                                        if (err.getSeverity () != null)
+                                                                          aErrorDetails.add ("severity",
+                                                                                             err.getSeverity ());
+                                                                        if (err.getShortDescription () != null)
+                                                                          aErrorDetails.add ("shortDescription",
+                                                                                             err.getShortDescription ());
+                                                                        aErrors.add (aErrorDetails);
+                                                                        LOGGER.warn ("AS4 error received: " +
+                                                                                     aErrorDetails.getAsJsonString ());
+                                                                      }
+                                                                      aJson.add ("as4ResponseErrors", aErrors);
+                                                                      aJson.add ("as4ResponseError", true);
+                                                                    }
+                                                                    else
+                                                                      aJson.add ("as4ResponseError", false);
+                                                                  })
+                                                                  .disableValidation ();
       final Wrapper <Phase4Exception> aCaughtEx = new Wrapper <> ();
       eResult = aBuilder.sendMessageAndCheckForReceipt (aCaughtEx::set);
       LOGGER.info ("Peppol client send result: " + eResult);
@@ -263,7 +277,8 @@ public class PeppolSenderController
     return aJson.getAsJsonString (JsonWriterSettings.DEFAULT_SETTINGS_FORMATTED);
   }
 
-  @PostMapping (path = "/sendtest/{senderId}/{receiverId}/{docTypeId}/{processId}/{countryC1}", produces = MediaType.APPLICATION_JSON_VALUE)
+  @PostMapping (path = "/sendtest/{senderId}/{receiverId}/{docTypeId}/{processId}/{countryC1}",
+                produces = MediaType.APPLICATION_JSON_VALUE)
   public String sendPeppolTestMessage (@RequestBody final byte [] aPayloadBytes,
                                        @PathVariable final String senderId,
                                        @PathVariable final String receiverId,
@@ -334,75 +349,92 @@ public class PeppolSenderController
       // TODO set to null if your using the dumping
       final IAS4RawResponseConsumer aRRC = new AS4RawResponseConsumerWriteToFile ();
 
-      final PeppolUserMessageSBDHBuilder aBuilder;
-      aBuilder = Phase4PeppolSender.sbdhBuilder ()
-                                   .httpClientFactory (aHCS)
-                                   .payloadAndMetadata (aData)
-                                   .senderPartyID (sMyPeppolSeatID)
-                                   .smpClient (aSMPClient)
-                                   .peppolAP_CAChecker (PeppolCertificateChecker.peppolTestEb2bAP ())
-                                   .rawResponseConsumer (aRRC)
-                                   .endpointURLConsumer (endpointUrl -> {
-                                     // Determined by SMP lookup
-                                     aJson.add ("c3EndpointUrl", endpointUrl);
-                                   })
-                                   .certificateConsumer ( (aAPCertificate, aCheckDT, eCertCheckResult) -> {
-                                     // Determined by SMP lookup
-                                     aJson.add ("c3Cert", CertificateHelper.getPEMEncodedCertificate (aAPCertificate));
-                                     aJson.add ("c3CertSubjectCN",
-                                                PeppolCertificateHelper.getSubjectCN (aAPCertificate));
-                                     aJson.add ("c3CertCheckDT", PDTWebDateHelper.getAsStringXSD (aCheckDT));
-                                     aJson.add ("c3CertCheckResult", eCertCheckResult);
-                                   })
-                                   .buildMessageCallback (new IAS4ClientBuildMessageCallback ()
-                                   {
-                                     public void onAS4Message (@Nonnull final AbstractAS4Message <?> aMsg)
-                                     {
-                                       // Created AS4 fields
-                                       final AS4UserMessage aUserMsg = (AS4UserMessage) aMsg;
-                                       aJson.add ("as4MessageId",
-                                                  aUserMsg.getEbms3UserMessage ().getMessageInfo ().getMessageId ());
-                                       aJson.add ("as4ConversationId",
-                                                  aUserMsg.getEbms3UserMessage ()
-                                                          .getCollaborationInfo ()
-                                                          .getConversationId ());
-                                     }
-                                   })
-                                   .signalMsgConsumer ( (aSignalMsg, aMessageMetadata, aState) -> {
-                                     aJson.add ("as4ReceivedSignalMsg",
-                                                new Ebms3SignalMessageMarshaller ().getAsString (aSignalMsg));
+      final PeppolUserMessageSBDHBuilder aBuilder = Phase4PeppolSender.sbdhBuilder ()
+                                                                      .httpClientFactory (aHCS)
+                                                                      .payloadAndMetadata (aData)
+                                                                      .senderPartyID (sMyPeppolSeatID)
+                                                                      .smpClient (aSMPClient)
+                                                                      .peppolAP_CAChecker (PeppolTrustedCA.peppolTestEb2bAP ())
+                                                                      .rawResponseConsumer (aRRC)
+                                                                      .endpointURLConsumer (endpointUrl -> {
+                                                                        // Determined by SMP lookup
+                                                                        aJson.add ("c3EndpointUrl", endpointUrl);
+                                                                      })
+                                                                      .certificateConsumer ( (aAPCertificate,
+                                                                                              aCheckDT,
+                                                                                              eCertCheckResult) -> {
+                                                                        // Determined by SMP lookup
+                                                                        aJson.add ("c3Cert",
+                                                                                   CertificateHelper.getPEMEncodedCertificate (aAPCertificate));
+                                                                        aJson.add ("c3CertSubjectCN",
+                                                                                   CertificateHelper.getSubjectCN (aAPCertificate));
+                                                                        aJson.add ("c3CertCheckDT",
+                                                                                   PDTWebDateHelper.getAsStringXSD (aCheckDT));
+                                                                        aJson.add ("c3CertCheckResult",
+                                                                                   eCertCheckResult);
+                                                                      })
+                                                                      .buildMessageCallback (new IAS4ClientBuildMessageCallback ()
+                                                                      {
+                                                                        public void onAS4Message (@Nonnull final AbstractAS4Message <?> aMsg)
+                                                                        {
+                                                                          // Created AS4 fields
+                                                                          final AS4UserMessage aUserMsg = (AS4UserMessage) aMsg;
+                                                                          aJson.add ("as4MessageId",
+                                                                                     aUserMsg.getEbms3UserMessage ()
+                                                                                             .getMessageInfo ()
+                                                                                             .getMessageId ());
+                                                                          aJson.add ("as4ConversationId",
+                                                                                     aUserMsg.getEbms3UserMessage ()
+                                                                                             .getCollaborationInfo ()
+                                                                                             .getConversationId ());
+                                                                        }
+                                                                      })
+                                                                      .signalMsgConsumer ( (aSignalMsg,
+                                                                                            aMessageMetadata,
+                                                                                            aState) -> {
+                                                                        aJson.add ("as4ReceivedSignalMsg",
+                                                                                   new Ebms3SignalMessageMarshaller ().getAsString (aSignalMsg));
 
-                                     if (aSignalMsg.hasErrorEntries ())
-                                     {
-                                       aJson.add ("as4ResponseError", true);
-                                       final IJsonArray aErrors = new JsonArray ();
-                                       for (final Ebms3Error err : aSignalMsg.getError ())
-                                       {
-                                         final IJsonObject aErrorDetails = new JsonObject ();
-                                         if (err.getDescription () != null)
-                                           aErrorDetails.add ("description", err.getDescriptionValue ());
-                                         if (err.getErrorDetail () != null)
-                                           aErrorDetails.add ("errorDetails", err.getErrorDetail ());
-                                         if (err.getCategory () != null)
-                                           aErrorDetails.add ("category", err.getCategory ());
-                                         if (err.getRefToMessageInError () != null)
-                                           aErrorDetails.add ("refToMessageInError", err.getRefToMessageInError ());
-                                         if (err.getErrorCode () != null)
-                                           aErrorDetails.add ("errorCode", err.getErrorCode ());
-                                         if (err.getOrigin () != null)
-                                           aErrorDetails.add ("origin", err.getOrigin ());
-                                         if (err.getSeverity () != null)
-                                           aErrorDetails.add ("severity", err.getSeverity ());
-                                         if (err.getShortDescription () != null)
-                                           aErrorDetails.add ("shortDescription", err.getShortDescription ());
-                                         aErrors.add (aErrorDetails);
-                                         LOGGER.warn ("AS4 error received: " + aErrorDetails.getAsJsonString ());
-                                       }
-                                       aJson.add ("as4ResponseErrors", aErrors);
-                                     }
-                                     else
-                                       aJson.add ("as4ResponseError", false);
-                                   });
+                                                                        if (aSignalMsg.hasErrorEntries ())
+                                                                        {
+                                                                          aJson.add ("as4ResponseError", true);
+                                                                          final IJsonArray aErrors = new JsonArray ();
+                                                                          for (final Ebms3Error err : aSignalMsg.getError ())
+                                                                          {
+                                                                            final IJsonObject aErrorDetails = new JsonObject ();
+                                                                            if (err.getDescription () != null)
+                                                                              aErrorDetails.add ("description",
+                                                                                                 err.getDescriptionValue ());
+                                                                            if (err.getErrorDetail () != null)
+                                                                              aErrorDetails.add ("errorDetails",
+                                                                                                 err.getErrorDetail ());
+                                                                            if (err.getCategory () != null)
+                                                                              aErrorDetails.add ("category",
+                                                                                                 err.getCategory ());
+                                                                            if (err.getRefToMessageInError () != null)
+                                                                              aErrorDetails.add ("refToMessageInError",
+                                                                                                 err.getRefToMessageInError ());
+                                                                            if (err.getErrorCode () != null)
+                                                                              aErrorDetails.add ("errorCode",
+                                                                                                 err.getErrorCode ());
+                                                                            if (err.getOrigin () != null)
+                                                                              aErrorDetails.add ("origin",
+                                                                                                 err.getOrigin ());
+                                                                            if (err.getSeverity () != null)
+                                                                              aErrorDetails.add ("severity",
+                                                                                                 err.getSeverity ());
+                                                                            if (err.getShortDescription () != null)
+                                                                              aErrorDetails.add ("shortDescription",
+                                                                                                 err.getShortDescription ());
+                                                                            aErrors.add (aErrorDetails);
+                                                                            LOGGER.warn ("AS4 error received: " +
+                                                                                         aErrorDetails.getAsJsonString ());
+                                                                          }
+                                                                          aJson.add ("as4ResponseErrors", aErrors);
+                                                                        }
+                                                                        else
+                                                                          aJson.add ("as4ResponseError", false);
+                                                                      });
       final Wrapper <Phase4Exception> aCaughtEx = new Wrapper <> ();
       eResult = aBuilder.sendMessageAndCheckForReceipt (aCaughtEx::set);
       LOGGER.info ("Peppol client send result: " + eResult);

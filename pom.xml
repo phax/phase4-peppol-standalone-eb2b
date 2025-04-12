@@ -24,13 +24,13 @@
   <parent>
     <groupId>com.helger.phase4</groupId>
     <artifactId>phase4-parent-pom</artifactId>
-    <version>3.0.7</version>
+    <version>3.1.0-beta1</version>
   </parent>
   <artifactId>phase4-peppol-standalone-eb2b</artifactId>
   <name>phase4-peppol-standalone-eb2b</name>
   <description>phase4 Peppol demo application for eB2B</description>
   <url>https://github.com/phax/phase4-peppol-standalone-eb2b</url>
-  <inceptionYear>2023</inceptionYear>
+  <inceptionYear>2025</inceptionYear>
 
   <licenses>
     <license>
