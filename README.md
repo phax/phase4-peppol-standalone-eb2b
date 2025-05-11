@@ -1,3 +1,7 @@
+# Archived and replaced
+
+**The eB2B specific version was integrated into https://github.com/phax/phase4-peppol-standalone - therefore this project is archived.**
+
 # Standalone Peppol phase4 eB2B
 
 This an example standalone implementation of [phase4](https://github.com/phax/phase4) for the Peppol Network.
